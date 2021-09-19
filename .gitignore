@@ -1,11 +1,12 @@
 /server_pinus/node_modules
-.idea
-.next
 /server_pinus/dist
 /client_cocos/temp
 /client_cocos/local
 /client_cocos/library
 /client_cocos/profiles
+.idea
+.next
+
 # production
 
 # misc
