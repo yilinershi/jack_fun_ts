@@ -1,0 +1,17 @@
+{
+  "test": {
+    "id": "test-master-server-1",
+    "host": "127.0.0.1",
+    "port": 3005
+  },
+  "development": {
+    "id": "development-master-server-1",
+    "host": "127.0.0.1",
+    "port": 3005
+  },
+  "production": {
+    "id": "production-master-server-1",
+    "host": "127.0.0.1",
+    "port": 3005
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "client_cocos",
+  "type": "3d",
+  "uuid": "f4deda19-5263-44fc-9f2c-412dad6d84bc",
+  "version": "3.3.0",
+  "creator": {
+    "version": "3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.9.3"
+  }
+}

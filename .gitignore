@@ -1,0 +1,23 @@
+/server_pinus/node_modules
+.idea
+.next
+/server_pinus/dist
+/client_cocos/temp
+/client_cocos/local
+/client_cocos/library
+/client_cocos/profiles
+# production
+
+# misc
+.DS_Store
+npm-debug.log*
+
+# umi
+.umi
+.umi-production
+
+package-lock.json
+.vscode/settings.json
+
+yarn.lock
+package-lock.json
