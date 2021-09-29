@@ -1,8 +1,7 @@
 import { pinus, RESERVED, RouteRecord, FrontendOrBackendSession, HandlerCallback } from "pinus";
 import { preload } from "./preload";
-import * as routeUtil from "./app/util/routeUtil";
-import { RedisProxy } from "./app/redis/redis";
-// import RedisManager from "./app/redislib/RedisManager";
+import * as routeUtil from "./app/util/RouteUtil";
+import { RedisProxy } from "./app/redis/RedisProxy";
 
 /**
  *  替换全局Promise
@@ -12,7 +11,7 @@ import { RedisProxy } from "./app/redis/redis";
 preload();
 
 function errorHandler(err: Error, msg: any, resp: any, session: FrontendOrBackendSession, cb: HandlerCallback) {
-    const errMsg = `${pinus.app.serverId} error handler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,error stack: ${err.stack}`;
+    const errMsg = `\n error serverId=${pinus.app.serverId} \n error handler msg[${JSON.stringify(msg)}] \n resp[${JSON.stringify(resp)}] ,to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,error stack: ${err.stack}`;
     console.error(errMsg);
     if (!resp) {
         resp = { code: 1003, message: errMsg };
@@ -32,63 +31,30 @@ function globalErrorHandler(err: Error, msg: any, resp: any, session: FrontendOr
 let app = pinus.createApp();
 app.set("name", "jack-fun-ts-server");
 
-app.configure("production|development|test", "game", function () {
+app.configure("production|development|test", "game", () => {
 
 });
 
-app.configure("development|production", "gate", function () {
+app.configure("development|production|test", "connector", () => {
     app.set("connectorConfig", {
         connector: pinus.connectors.hybridconnector,
         heartbeat: 3,
         useDict: true,
-        useProtobuf: true,
-        // ssl: {
-        //     type: "wss",
-        //     key: fs.readFileSync("./key/www.allfornaruto.cn.key"),
-        //     cert: fs.readFileSync("./key/www.allfornaruto.cn.pem"),
-        // },
     });
 });
 
-app.configure("test", "gate", function () {
+app.configure("development|production|test", "gate", () => {
     app.set("connectorConfig", {
         connector: pinus.connectors.hybridconnector,
-        heartbeat: 3,
-        useDict: true,
-        useProtobuf: true,
     });
 });
 
-app.configure("development|production", "connector", function () {
-    app.set("connectorConfig", {
-        connector: pinus.connectors.hybridconnector,
-        heartbeat: 3,
-        useDict: true,
-        useProtobuf: true,
-        // ssl: {
-        //     type: "wss",
-        //     key: fs.readFileSync("./key/www.allfornaruto.cn.key"),
-        //     cert: fs.readFileSync("./key/www.allfornaruto.cn.pem"),
-        // },
-    });
-});
-
-app.configure("test", "connector", function () {
-    app.set("connectorConfig", {
-        connector: pinus.connectors.hybridconnector,
-        heartbeat: 3,
-        useDict: true,
-        useProtobuf: true,
-    });
-});
-
-app.configure("production|development|test", function () {
+app.configure("production|development|test", () => {
     app.set(RESERVED.ERROR_HANDLER, errorHandler);
     app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
-    app.globalAfter((err: Error, routeRecord: RouteRecord, msg: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
-        console.log("global after ", err, routeRecord, msg);
+    app.globalAfter((err: Error, routeRecord: RouteRecord, req: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
+        console.log(`global after,err=${JSON.stringify(err)}\nrouteRecorrd=${JSON.stringify(routeRecord)}\nreq=${JSON.stringify(req)}\nresp=${JSON.stringify(resp)}`);
     });
-
     // route configures
     app.route("game", routeUtil.game);
 });
@@ -100,6 +66,6 @@ app.configure("production|development|test", () => {
 
 app.start();
 
-process.on("uncaughtException", function (err) {
+process.on("uncaughtException", (err) => {
     console.error(" Caught exception: " + err.stack);
 });

@@ -25,10 +25,12 @@ export class LoginView extends Component {
     }
 
     public start() {
-        if (localStorage.getItem("account") != null) {
+        this._editBoxAccount.string = ""
+        this._editBoxPassword.string = ""
+        if (localStorage.getItem("account") != undefined) {
             this._editBoxAccount.string = localStorage.getItem("account")
         }
-        if (localStorage.getItem("password") != null) {
+        if (localStorage.getItem("password") != undefined) {
             this._editBoxPassword.string = localStorage.getItem("password")
         }
     }
@@ -39,26 +41,27 @@ export class LoginView extends Component {
     }
 
     public onDisable() {
+
     }
 
     private buttonLoginClick() {
         LoginController.reqLogin(this._editBoxAccount.string, this._editBoxPassword.string, () => {
-            localStorage.setItem("account", Session.Account)
-            localStorage.setItem("password", Session.Password)
-
-            director.loadScene("hall", (err, scene) => {
-                if (err != null) {
-                    return
-                }
-                director.runScene(scene)
+            localStorage.setItem("account", this._editBoxAccount.string)
+            localStorage.setItem("password", this._editBoxPassword.string)
+            LoginController.reqEnterGame(() => {
+                director.loadScene("hall", (err, scene) => {
+                    if (err != null) {
+                        return
+                    }
+                })
             })
         })
     }
 
     private buttonRegisterClick() {
         LoginController.reqRegister(this._editBoxAccount.string, this._editBoxPassword.string, () => {
-            localStorage.setItem("account", Session.Account)
-            localStorage.setItem("password", Session.Password)
+            localStorage.setItem("account", this._editBoxAccount.string)
+            localStorage.setItem("password", this._editBoxPassword.string)
         })
     }
 

@@ -3,7 +3,7 @@ install:
 	@echo '============   server_pinus npm installed ============'
 
 start:
-	@npm run build && npm run start 
+	@npm run start 
 
 ## 启动测试服
 start_test:

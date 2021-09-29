@@ -1,59 +1,68 @@
 import * as crypto from "crypto"
 
-let secret_key = "InmbuvP6Z8";
+
 
 export default class UToken {
-    public userid: string;
-    public exp: number;
+    private key: string = "37725295ea78b626";                           // Buffer.from('37725295ea78b626', 'utf8');
+    private iv: string = "efcf77768be478cb";                            // Buffer.from('efcf77768be478cb', 'utf8');
+    private codePackageA: { account: string, timeOut: number };
+    private codePackageB: { account: string, timeOut: number };
 
-    constructor(userid?: string) {
-        this.userid = userid;
-        this.refresh();
+    constructor(account: string) {
+        this.codePackageA = {
+            account: account,
+            timeOut: new Date().getTime() + 1000 * 60 * 60
+        }
     }
 
-    public refresh() {
-        this.exp = new Date().getTime() + 1000 * 60 * 60;
-    }
-
+    /**
+     * 验证token是否正确
+     * @returns 
+     */
     public isValid() {
-        if (this.userid && this.exp) {
-            return true;
-        }
-        return false;
+        return this.codePackageA.account == this.codePackageB.account;
     }
 
+    /**
+     * 难token是否过期
+     * @returns 
+     */
     public isOutOfDate() {
-        let now = new Date().getTime();
-        return (now > this.exp);
-    }
-
-    /**
-     * 加密
-     * @param tokenString 
-     */
-    public encrypt() {
-        let cipher = crypto.createCipher("aes-256-cbc", secret_key);
-        let str = JSON.stringify(this);
-        let crypted = cipher.update(str, 'utf8', 'hex');
-        crypted += cipher.final("hex");
-        return crypted;
-    }
-
-    /**
-     * 解密
-     * @param tokenString 
-     */
-    public decrypt(tokenString: string) {
-        if (tokenString) {
-            let decipher = crypto.createDecipher("aes-256-cbc", secret_key);
-            let dec = decipher.update(tokenString, "hex", "utf8");
-            dec += decipher.final("utf8");
-            let obj = JSON.parse(dec);
-            this.userid = obj.userid;
-            this.exp = obj.exp;
-        } else {
-            this.userid = null;
-            this.exp = null;
+        if (this.codePackageA.account != this.codePackageB.account) {
+            return false
         }
+        let now = new Date().getTime()
+        return (now > this.codePackageB.timeOut);
+    }
+
+    /**
+     * 加密，加密包为账号与过期时间的jsonstring组合codePackageA
+     * @returns 
+     */
+    public encode(): string {
+        let src = JSON.stringify(this.codePackageA)
+        let token: string = "";
+        const cipher = crypto.createCipheriv("aes-128-cbc", this.key, this.iv);
+        token += cipher.update(src, "utf8", "hex");
+        token += cipher.final("hex");
+        return token;
+    }
+
+    /**
+     * 解密，将token解密为codePackageB
+     * @returns 
+     */
+    public decode(sign: string) {
+        let src = "";
+        const cipher = crypto.createDecipheriv("aes-128-cbc", this.key, this.iv);
+        src += cipher.update(sign, "hex", "utf8");
+        src += cipher.final("utf8");
+        let obj = JSON.parse(src)
+        this.codePackageB = {
+            account: obj.account,
+            timeOut: obj.timeOut
+        }
+        return this
     }
 }
+

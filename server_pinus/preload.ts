@@ -28,7 +28,7 @@ export function preload() {
   });
 
   // 捕获普通异常
-  process.on("uncaughtException", function (err) {
+  process.on("uncaughtException",  (err)=> {
     console.error(err);
   });
 

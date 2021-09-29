@@ -3,10 +3,10 @@
 import { createClient, RedisClient, ClientOpts, Multi } from "redis";
 import { Logger } from 'log4js';
 
-import { IRedisString, IRedisZset, IHyperLogLog, IRedisList, IRedisSet, IRedisCommand } from './interface';
-import { IRedisHash } from './interface/Hash';
-import { IRedisBitmap, FieldType, FieldOffset, OverflowType } from './interface/Bitmap';
-import "./interface/Pipeline";
+import { IRedisString, IRedisZset, IHyperLogLog, IRedisList, IRedisSet, IRedisCommand } from './Interface';
+import { IRedisHash } from './Interface/Hash';
+import { IRedisBitmap, FieldType, FieldOffset, OverflowType } from './Interface/Bitmap';
+import "./Interface/Pipeline";
 
 export class RedisProxy implements IRedisCommand {
   logger: Console | Logger = console;

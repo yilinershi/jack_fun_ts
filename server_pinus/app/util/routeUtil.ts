@@ -1,4 +1,4 @@
-import { dispatch } from "./dispatcher";
+import { dispatch } from "./Dispatcher";
 import { Session, Application } from "pinus";
 
 export function game(session: Session, msg: any, app: Application, cb: (err: Error, serverId?: string) => void) {
