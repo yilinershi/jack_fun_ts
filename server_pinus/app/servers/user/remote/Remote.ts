@@ -10,14 +10,12 @@ declare global {
     }
 }
 
-export default function (app: Application) {
-    return new Remote(app);
-}
+export default (app: Application) => { return new Remote(app) }
 
 /**
  * 一切与用户相关的服务，如用户信息，货币，好友等
  */
-export class Remote {
+class Remote {
     constructor(private app: Application) {
         this.app = app;
     }
@@ -30,7 +28,7 @@ export class Remote {
     public async GetUserInfo(uid: number) {
         let redisProxy: RedisProxy = this.app.get("redisProxy");
         let db_user_jsonString = await redisProxy.hget("db_user", uid.toString())
-       
+
         if (db_user_jsonString != null) {
             return JSON.parse(db_user_jsonString)
         }

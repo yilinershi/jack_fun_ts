@@ -3,23 +3,16 @@ import { BrnnRoom } from "../../../internal/brnnRoom/BrnnRoom";
 
 
 declare global {
-    interface UserRpc {
-        brnn: {
-            Remote: RemoterClass<FrontendSession, Remote>;
-        }
-    }
+    interface UserRpc { brnn: { Remote: RemoterClass<FrontendSession, Remote>; } }
 }
 
-export default function (app: Application) {
-    return new Remote(app);
-}
+export default (app: Application) => { return new Remote(app) }
 
-/**
- * 一切与用户相关的服务，如用户信息，货币，好友等
- */
+
 class Remote {
     private channelService: ChannelService;
     private channel: Channel
+
     constructor(private app: Application) {
         this.app = app;
         this.channelService = this.app.get("channelService");
@@ -40,5 +33,13 @@ class Remote {
             return { code: 0, msg: "加入房间成功" }
         }
         return { code: -110, msg: "房间不存在" }
+    }
+
+    public async RoomExit(msg: { userId: number, serverId: string, roomId: string }) {
+        if (this.channel.name != msg.roomId) {
+            return { code: -111, msg: "未找到指定房间" }
+        }
+        this.channel.leave(msg.userId.toString(), msg.serverId);
+        this.channel.pushMessage("brnn.onActionUserExit", { uid: msg.userId })
     }
 }

@@ -1,6 +1,5 @@
-import { pinus, RESERVED, RouteRecord, FrontendOrBackendSession, HandlerCallback } from "pinus";
+import { pinus, FrontendOrBackendSession, HandlerCallback } from "pinus";
 import { preload } from "./preload";
-import * as routeUtil from "./app/util/RouteUtil";
 import { RedisProxy } from "./app/redis/RedisProxy";
 
 /**
@@ -31,11 +30,8 @@ function globalErrorHandler(err: Error, msg: any, resp: any, session: FrontendOr
 let app = pinus.createApp();
 app.set("name", "jack-fun-ts-server");
 
-app.configure("production|development|test", "game", () => {
 
-});
-
-app.configure("development|production|test", "connector", () => {
+app.configure("development|production", "connector", () => {
     app.set("connectorConfig", {
         connector: pinus.connectors.hybridconnector,
         heartbeat: 3,
@@ -43,23 +39,24 @@ app.configure("development|production|test", "connector", () => {
     });
 });
 
-app.configure("development|production|test", "gate", () => {
+app.configure("development|production", "gate", () => {
     app.set("connectorConfig", {
         connector: pinus.connectors.hybridconnector,
     });
 });
 
-app.configure("production|development|test", () => {
-    app.set(RESERVED.ERROR_HANDLER, errorHandler);
-    app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
-    app.globalAfter((err: Error, routeRecord: RouteRecord, req: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
-        console.log(`global after,err=${JSON.stringify(err)}\nrouteRecorrd=${JSON.stringify(routeRecord)}\nreq=${JSON.stringify(req)}\nresp=${JSON.stringify(resp)}`);
-    });
-    // route configures
-    app.route("game", routeUtil.game);
-});
 
-app.configure("production|development|test", () => {
+
+// app.configure("production|development|test", () => {
+//     app.set(RESERVED.ERROR_HANDLER, errorHandler);
+//     app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
+//     app.globalAfter((err: Error, routeRecord: RouteRecord, req: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
+//         console.log(`global after,err=${JSON.stringify(err)}\nrouteRecorrd=${JSON.stringify(routeRecord)}\nreq=${JSON.stringify(req)}\nresp=${JSON.stringify(resp)}`);
+//     });
+//     app.route("game", routeUtil.game);
+// });
+
+app.configure("production|development", () => {
     let redisProxy = new RedisProxy();
     app.set("redisProxy", redisProxy);
 })

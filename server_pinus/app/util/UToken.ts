@@ -19,7 +19,7 @@ export default class UToken {
      * 验证token是否正确
      * @returns 
      */
-    public isValid() {
+    public get isValid() {
         return this.codePackageA.account == this.codePackageB.account;
     }
 
@@ -27,7 +27,7 @@ export default class UToken {
      * 难token是否过期
      * @returns 
      */
-    public isOutOfDate() {
+    public get isOutOfDate() {
         if (this.codePackageA.account != this.codePackageB.account) {
             return false
         }

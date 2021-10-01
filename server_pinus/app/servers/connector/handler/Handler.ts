@@ -1,11 +1,9 @@
 import { Application, FrontendSession } from "pinus";
 import GameConfig from "../../../internal/define/Config";
-import { E_GameType, E_MatchType } from "../../../internal/define/Enum";
+import { E_GameType } from "../../../internal/define/Enum";
 import UToken from "../../../util/UToken";
 
-export default function (app: Application) {
-    return new Handler(app);
-}
+export default (app: Application) => { return new Handler(app); }
 
 class Handler {
     constructor(private app: Application) {
@@ -13,11 +11,9 @@ class Handler {
     }
 
     public async Enter(msg: { account: string, token: string, uid: number }, session: FrontendSession) {
-        let uToken = new UToken(msg.account)
-        uToken.decode(msg.token);
-       
+        let uToken = new UToken(msg.account).decode(msg.token);
         let sessionService = this.app.get("sessionService");
-        if (uToken.isValid() == false) {
+        if (uToken.isValid == false) {
             sessionService.kickBySessionId(session.id);
             return { code: -102, msg: "无效的token" }
         }
@@ -32,19 +28,20 @@ class Handler {
 
 
     public async JoinRoom(msg: { account: string, token: string, uid: number, gameType: E_GameType, roomId: string }, session: FrontendSession) {
-        // let uToken = new UToken(msg.account);
-        // uToken.decrypt(msg.token);
+        let uToken = new UToken(msg.account).decode(msg.token);
         let sessionService = this.app.get("sessionService");
-        // if (uToken.isValid() == false) {
-        //     sessionService.kickBySessionId(session.id);
-        //     return { code: -102, msg: "无效的token" }
-        // }
+        if (uToken.isValid == false) {
+            sessionService.kickBySessionId(session.id);
+            return { code: -102, msg: "无效的token" }
+        }
 
         switch (msg.gameType) {
             case E_GameType.Brnn:
                 {
                     let rid = msg.roomId;
                     let uid = msg.uid.toString()
+                    let serverId: string = this.app.get("serverId")
+
                     if (!sessionService.getByUid(uid)) {
                         session.bind(uid, (err: Error, result) => {
                             if (err) {
@@ -58,11 +55,15 @@ class Handler {
                             }
                         });
                         session.on("closed", () => {
-                            //todo on session close
+                            let remoteMsg = {
+                                userId: msg.uid,
+                                serverId: serverId,
+                                roomId: rid
+                            }
+                            this.app.rpc.brnn.Remote.RoomExit.route(session)(remoteMsg)
                         });
                     }
 
-                    let serverId: string = this.app.get("serverId")
                     if (serverId) {
                         let remoteMsg = {
                             userId: msg.uid,

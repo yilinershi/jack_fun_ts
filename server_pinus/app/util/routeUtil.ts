@@ -2,7 +2,7 @@ import { dispatch } from "./Dispatcher";
 import { Session, Application } from "pinus";
 
 export function game(session: Session, msg: any, app: Application, cb: (err: Error, serverId?: string) => void) {
-    let gameServers = app.getServersByType("game");
+    let gameServers = app.getServersByType("brnn");
 
     if (!gameServers || gameServers.length === 0) {
         cb(new Error("can not find game servers."));

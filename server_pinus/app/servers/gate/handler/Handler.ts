@@ -1,8 +1,8 @@
 
 import { Application, BackendSession } from "pinus"
 import { E_Sex } from "../../../internal/define/Enum";
-import { DbAccount } from '../../../redis/DB/DbAccount';
-import { DbUser } from "../../../redis/DB/DbUser";
+import { DbAccount } from '../../../redis/db/DbAccount';
+import { DbUser } from "../../../redis/db/DbUser";
 import { RedisProxy } from '../../../redis/RedisProxy';
 import UToken from "../../../util/UToken";
 
@@ -12,7 +12,7 @@ export default function (app: Application) {
 
 class Handler {
     constructor(private app: Application) {
-
+        this.app=app
     }
 
     public async Register(msg: { account: string, password: string }, session: BackendSession) {
@@ -69,8 +69,8 @@ class Handler {
         db_account.token = tokenString
 
         //随机选择一个connector
-        let randIndex = Math.floor(Math.random() * (connectors.length - 1))
-        let connector = connectors[randIndex];
+        // let randIndex = Math.floor(Math.random() * (connectors.length - 1))
+        let connector = connectors[0];
 
         await redisProxy.hset("db_account", db_account.account, JSON.stringify(db_account))
         let resp = {
