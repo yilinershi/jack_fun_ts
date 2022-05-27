@@ -1,7 +1,24 @@
-import { pinus, FrontendOrBackendSession, HandlerCallback } from "pinus";
-import { preload } from "./preload";
-import { RedisProxy } from "./app/redis/RedisProxy";
+import { pinus } from 'pinus';
+import { preload } from './preload';
+import _pinus = require('pinus');
+// import RedisManager from './app/redis/RedisManager';
+import DaoManager from './app/dao/DaoManager';
 
+const filePath = (_pinus as any).FILEPATH;
+filePath.MASTER = '/config/master';
+filePath.SERVER = '/config/servers';
+filePath.CRON = '/config/crons';
+filePath.LOG = '/config/log4js';
+// filePath.SERVER_PROTOS = '/config/serverProtos';
+// filePath.CLIENT_PROTOS = '/config/clientProtos';
+filePath.MASTER_HA = '/config/masterha';
+filePath.LIFECYCLE = '/lifecycle';
+filePath.SERVER_DIR = '/app/servers/';
+filePath.CONFIG_DIR = '/config';
+
+const adminfilePath = _pinus.DEFAULT_ADMIN_PATH;
+adminfilePath.ADMIN_FILENAME = 'adminUser';
+adminfilePath.ADMIN_USER = 'config/adminUser';
 /**
  *  替换全局Promise
  *  自动解析sourcemap
@@ -9,60 +26,35 @@ import { RedisProxy } from "./app/redis/RedisProxy";
  */
 preload();
 
-function errorHandler(err: Error, msg: any, resp: any, session: FrontendOrBackendSession, cb: HandlerCallback) {
-    const errMsg = `\n error serverId=${pinus.app.serverId} \n error handler msg[${JSON.stringify(msg)}] \n resp[${JSON.stringify(resp)}] ,to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,error stack: ${err.stack}`;
-    console.error(errMsg);
-    if (!resp) {
-        resp = { code: 1003, message: errMsg };
-    }
-    cb(err, resp);
-}
-
-function globalErrorHandler(err: Error, msg: any, resp: any, session: FrontendOrBackendSession, cb: HandlerCallback) {
-    const errMsg = `${pinus.app.serverId} globalErrorHandler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,error stack: ${err.stack}`;
-    console.error(errMsg);
-
-    if (cb) {
-        cb(err, resp ? resp : { code: 503, message: errMsg });
-    }
-}
-
+/**
+ * Init app for client.
+ */
 let app = pinus.createApp();
-app.set("name", "jack-fun-ts-server");
+app.set('name', 'guide');
 
-
-app.configure("development|production", "connector", () => {
-    app.set("connectorConfig", {
-        connector: pinus.connectors.hybridconnector,
-        heartbeat: 3,
-        useDict: true,
-    });
+// app configuration
+app.configure('production|development', 'connector',  ()=> {
+    app.set('connectorConfig',
+        {
+            connector: pinus.connectors.hybridconnector,
+            heartbeat: 3,
+            useDict: true,
+            useProtobuf: true
+        });
 });
 
-app.configure("development|production", "gate", () => {
-    app.set("connectorConfig", {
-        connector: pinus.connectors.hybridconnector,
-    });
+//redis配置
+// app.loadConfig('redis',app.getBase() + '/config/redis');
+//mysql配置
+app.loadConfig('mysql',app.getBase() + '/config/mysql')
+
+app.configure('production|development', "master|connector",  () =>{
+    //redis管理初始化
+    // new RedisManager(app);
+    //mysql管理初始化
+    new DaoManager(app);
 });
 
-
-
-// app.configure("production|development|test", () => {
-//     app.set(RESERVED.ERROR_HANDLER, errorHandler);
-//     app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
-//     app.globalAfter((err: Error, routeRecord: RouteRecord, req: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
-//         console.log(`global after,err=${JSON.stringify(err)}\nrouteRecorrd=${JSON.stringify(routeRecord)}\nreq=${JSON.stringify(req)}\nresp=${JSON.stringify(resp)}`);
-//     });
-//     app.route("game", routeUtil.game);
-// });
-
-app.configure("production|development", () => {
-    let redisProxy = new RedisProxy();
-    app.set("redisProxy", redisProxy);
-})
-
+// start app
 app.start();
 
-process.on("uncaughtException", (err) => {
-    console.error(" Caught exception: " + err.stack);
-});
