@@ -4,11 +4,20 @@ import { Session } from "./LoginModel";
 export class LoginController {
 
     public static Init(callback?: Function) {
-        PinusUtil.init('127.0.0.1', 3100)
+        PinusUtil.init('127.0.0.1', 3010)
     }
 
     public static reqRegister(account: string, password: string, success: Function) {
-        PinusUtil.request("gate.Handler.Register", { account: account, password: password }, (data: any) => {
+
+        let req = {
+            account: account,
+            password: password,
+            nickname: "又酸又菜又多余",
+            gender: 0,
+            avatar: "http://this.is.avatar.url",
+        }
+
+        PinusUtil.request("connector.ConnectHandler.onRegister", req, (data: any) => {
             if (data.code == 0) {
                 Session.account.account = account
                 Session.account.password = password
