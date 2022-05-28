@@ -1,10 +1,10 @@
 import { Application, FrontendSession } from 'pinus';
 import { DaoAccountInfo } from '../../../dao/controller/DaoUserAccountInfo';
 import { DefServerType } from '../../../define/DefServerType';
-import { AppProtocol, ErrorCode } from '../../../protocol/AppProtocol';
 import { ProtocolConnect } from '../../../protocol/ProtocolConnect';
 import { ConnectLogger } from '../logger/ConnectLogger';
 import { plainToInstance } from 'class-transformer'
+import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
 
 export default function (app: Application) {
     return new Handler(app);

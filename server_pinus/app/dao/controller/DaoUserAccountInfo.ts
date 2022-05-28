@@ -1,9 +1,9 @@
+import moment = require("moment");
 import { DaoExecute } from "../DaoExecute";
 import { DbAccountInfo } from "../model/DbModel";
 import { DaoTable } from "../../define/DaoTable";
 import DaoManager from "../DaoManager";
-import moment = require("moment");
-import { ErrorCode } from "../../protocol/AppProtocol";
+import { ErrorCode } from "../../protocol/ProtocolErrorCode";
 
 /**
 * 定义一个register的db返回的数据结构

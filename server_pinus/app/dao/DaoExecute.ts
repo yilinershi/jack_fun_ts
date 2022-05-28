@@ -1,13 +1,14 @@
 let util = require('util');
-export class DaoPack {
+
+export interface DaoPack {
     fieldCount: number;
-    affectedRows: number;
-    insertId: number;
+    affectedRows: number;       //影响的条数   
+    insertId: number;           //插入mysql的id
     serverStatus: number;
     warningCount: number;
-    message: string;
+    message: string;            //消息
     protocol41: boolean;
-    changedRows: number
+    changedRows: number         //改变的条数
 }
 
 export class DaoExecute {
@@ -96,8 +97,8 @@ export class DaoExecute {
         });
     }
 
-    public format(format:string,...arg:any):string{
-        return util.format(format,arg);
+    public format(format: string, ...arg: any): string {
+        return util.format(format, arg);
     }
 
     public async select(sql: string, params?: Array<any>): Promise<Array<any>> {
