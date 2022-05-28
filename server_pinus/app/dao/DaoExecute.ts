@@ -64,6 +64,10 @@ export class DaoExecute {
         });
     }
 
+    /**
+     * 回滚
+     * @returns 是否回滚成功
+     */
     public async rollback(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.mConn.rollback((a, b) => {

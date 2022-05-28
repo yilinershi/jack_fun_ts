@@ -3,7 +3,7 @@ import { preload } from './preload';
 import _pinus = require('pinus');
 // import RedisManager from './app/redis/RedisManager';
 import DaoManager from './app/dao/DaoManager';
-
+import "reflect-metadata"
 const filePath = (_pinus as any).FILEPATH;
 filePath.MASTER = '/config/master';
 filePath.SERVER = '/config/servers';
@@ -52,7 +52,7 @@ app.configure('production|development', "master|connector",  () =>{
     //redis管理初始化
     // new RedisManager(app);
     //mysql管理初始化
-    new DaoManager(app);
+     DaoManager.init(app);
 });
 
 // start app

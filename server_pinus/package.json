@@ -14,13 +14,14 @@
         "@types/bluebird": "^3.5.19",
         "@types/node": "8.10.54",
         "bluebird": "^3.5.1",
+        "class-transformer": "^0.5.1",
         "crypto": "^1.0.1",
-        "moment": "^2.29.1",
+        "moment": "^2.29.3",
         "mysql": "^2.18.1",
         "pinus": "1.4.10",
         "redis": "^3.0.2",
         "redlock": "^4.2.0",
-        "reflect-metadata": "^0.1.10",
+        "reflect-metadata": "^0.1.13",
         "source-map-support": "^0.5.0"
     },
     "devDependencies": {

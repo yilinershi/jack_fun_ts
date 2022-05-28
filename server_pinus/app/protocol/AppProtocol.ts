@@ -1,85 +1,30 @@
-
-
 /**
  * 请求结果返回码
  */
-export enum ProResponseCode {
-    CODE_NULL = 0,        //未定义
-    CODE_SUCCEED = 200,      //请求成功
-    CODE_FAIL = 500,      //请求失败
-}
-
-/**
- * 初始化接口
- */
-export interface IProInitializer {
-    /**
-     * 子类必须实现该方法对所有类成员变量初始化
-     * number初始化为0
-     * string初始化为''
-     * T 初始化为new T  (T为对象)
-     * Array 初始化为 [new T] (T为对象或基本数据类型)
-     */
-    initialization(): void;
+export class ErrorCode {
+    public static FAIL = { code: -1, msg: "默认错误" };
+    public static SUCCEED = { code: 0, msg: "成功" };
+    public static REQ_ARGS_ERR = { code: 1, msg: "请求参数格式错误" };
+    public static ACCOUNT_EXIST = { code: 2, msg: "账号已存在" };
+    public static DB_CON_ERR = { code: 3, msg: "连接数据库失败" };
+    public static DB_SAVE_ERR = { code: 4, msg: "保存数据失败" };
 }
 
 /**
  * 所有请求数据的基类
  */
-export abstract class ProRequest implements IProInitializer {
-    constructor() {
-        this.initialization();
-    }
-    /**
-     * 子类必须实现该方法对所有类成员变量初始化
-     * number初始化为0
-     * string初始化为''
-     * T 初始化为new T  (T为对象)
-     * Array 初始化为 [new T] (T为对象或基本数据类型)
-     */
-    public abstract initialization(): void;
+export abstract class RequestBase {
+
 }
+
 /**
  * 所有请求结果的基类
  */
-export abstract class ProResponse implements IProInitializer {
-    public code: ProResponseCode = ProResponseCode.CODE_NULL;
-    public describe: string = '';
-    constructor() {
-        this.initialization();
-    }
-    /**
-     * 子类必须实现该方法对所有类成员变量初始化
-     * number初始化为0,
-     * string初始化为'',
-     * T 初始化为new T  (T为对象),
-     * Array 初始化为 [new T] (T为对象或基本数据类型),
-     */
-    public abstract initialization(): void;
+export abstract class ResponseBase {
+    public errCode: ErrorCode = ErrorCode.FAIL;
 }
 
 export class AppProtocol {
-    /**
-     * 构造请求结果
-     * @param C 
-     * @param sussced 
-     * @param des 
-     */
-    public static response<T extends ProResponse>(C: new () => T, sussced: boolean, des?: string): T {
-        let res = new C;
-        res.code = sussced ? ProResponseCode.CODE_SUCCEED : ProResponseCode.CODE_FAIL;
-        if (des !== undefined) {
-            res.describe = des;
-        }
-        return res;
-    }
-    /**
-     * 构造请求
-     * @param C 
-     */
-    public static request<T extends ProRequest>(C: new () => T): T {
-        return new C;
-    }
 
     /**
      * 将客户端发来的消息转换为对应的对象
@@ -158,6 +103,7 @@ export class AppProtocol {
         }
         return temp;
     }
+
     /**
      * 将source和dest相同的字段复制给dest
      * @param dest 

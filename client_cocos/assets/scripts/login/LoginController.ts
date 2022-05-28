@@ -12,12 +12,9 @@ export class LoginController {
         let req = {
             account: account,
             password: password,
-            nickname: "又酸又菜又多余",
-            gender: 0,
-            avatar: "http://this.is.avatar.url",
         }
 
-        PinusUtil.request("connector.ConnectHandler.onRegister", req, (data: any) => {
+        PinusUtil.request("connector.Handler.OnRegister", req, (data: any) => {
             if (data.code == 0) {
                 Session.account.account = account
                 Session.account.password = password
@@ -26,12 +23,12 @@ export class LoginController {
                 }
                 return
             }
-            console.error(data.msg)
+            console.error(data)
         })
     }
 
     public static reqLogin(account: string, password: string, success: Function) {
-        PinusUtil.request("gate.Handler.Login", { account: account, password: password }, (data: any) => {
+        PinusUtil.request("connector.Handler.OnLogin", { account: account, password: password }, (data: any) => {
             if (data.code == 0) {
                 Session.account.account = data.resp.account.account
                 Session.account.password = data.resp.account.password
