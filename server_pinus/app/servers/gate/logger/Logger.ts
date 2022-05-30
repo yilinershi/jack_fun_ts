@@ -1,8 +1,9 @@
 import { getLogger } from 'pinus-logger';
 import * as path from 'path';
-let logger = getLogger('redis', path.basename(__filename));
 
-export class RedisLogger{
+let logger = getLogger('gate', path.basename(__filename));
+
+export class GateLogger{
     
     public static trace(message: any, ...args: any[]): void{
         logger.trace(message,args);

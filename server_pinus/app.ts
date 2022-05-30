@@ -4,6 +4,7 @@ import _pinus = require('pinus');
 // import RedisManager from './app/redis/RedisManager';
 import DaoManager from './app/dao/DaoManager';
 import "reflect-metadata"
+import GateManager from './app/servers/gate/service/GateManager';
 const filePath = (_pinus as any).FILEPATH;
 filePath.MASTER = '/config/master';
 filePath.SERVER = '/config/servers';
@@ -30,31 +31,37 @@ preload();
  * Init app for client.
  */
 let app = pinus.createApp();
-app.set('name', 'guide');
-
-// app configuration
-app.configure('production|development', 'connector',  ()=> {
-    app.set('connectorConfig',
-        {
-            connector: pinus.connectors.hybridconnector,
-            heartbeat: 3,
-            useDict: true,
-            useProtobuf: true
-        });
-});
+app.set('name', 'pinus_cc');
 
 //redis配置
 // app.loadConfig('redis',app.getBase() + '/config/redis');
-//mysql配置
-app.loadConfig('mysql',app.getBase() + '/config/mysql')
 
-app.configure('production|development', "master|connector",  () =>{
-    //redis管理初始化
-    // new RedisManager(app);
-    //mysql管理初始化
-     DaoManager.init(app);
+//mysql配置
+app.loadConfig('mysql', app.getBase() + '/config/mysql')
+
+app.configure('all', () => {
+    DaoManager.init(app);
+    switch (app.serverType) {
+        case 'gate':
+            GateManager.init()
+            app.set('connectorConfig',
+                {
+                    connector: pinus.connectors.hybridconnector,
+                });
+            break
+        case 'connector':
+            app.set('connectorConfig',
+                {
+                    connector: pinus.connectors.hybridconnector,
+                    heartbeat: 3,
+                    useDict: true,
+                    useProtobuf: true
+                });
+            break
+        default:
+            break;
+    }
 });
 
-// start app
 app.start();
 

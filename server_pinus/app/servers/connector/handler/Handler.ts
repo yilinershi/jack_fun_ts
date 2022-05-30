@@ -13,44 +13,25 @@ export default function (app: Application) {
 export class Handler {
     constructor(private app: Application) {
         if (app.getServerType() == DefServerType.CONNECTOR) {
+
         }
     }
 
-    public async OnRegister(msg: any, session: FrontendSession) {
-        try {
-            //step1:检查req格式，这里用到了'class-transformer'这个库，用于检测msg是否符合ProtocolConnect.Register.Request这个class结构
-
-            let req = plainToInstance(ProtocolConnect.Register.Request, msg)
-            if (req == null) {
-                let resp = new ProtocolConnect.Register.Response()
-                resp.errCode = ErrorCode.REQ_ARGS_ERR
-                return resp
-            }
-
-            ConnectLogger.debug("register req=" + JSON.stringify(req))
-            //step2:保存数据
-            let dbResult = await DaoAccountInfo.register(req.account, req.password);
-            if (dbResult.code != ErrorCode.SUCCEED) {
-                let resp = new ProtocolConnect.Register.Response()
-                resp.errCode = dbResult.code
-                return resp;
-            }
-
-            //step3:回复resp
-            let resp = new ProtocolConnect.Register.Response()
-            resp.errCode = ErrorCode.SUCCEED
-            resp.account = dbResult.data.account
-            resp.avatar = dbResult.data.avatar
-            resp.uid = dbResult.data.uid
-            resp.gender = dbResult.data.gender
-            resp.password = dbResult.data.password
+    public async OnAuth(msg: any, session: FrontendSession) {
+        let req = plainToInstance(ProtocolConnect.Auth.Request, msg)
+        if (req == null) {
+            let resp = new ProtocolConnect.Auth.Response()
+            resp.errCode = ErrorCode.REQ_ARGS_ERR
             return resp
-        } catch (error) {
-            ConnectLogger.error(error);
         }
+
+        let res = await this.app.rpc.gate.Remoter.isLogin.route(session)(req.uid, req.token)
+
+
+        let resp = new ProtocolConnect.Auth.Response()
+        resp.errCode = ErrorCode.SUCCEED
+        return resp
     }
-
-
 }
 
 
