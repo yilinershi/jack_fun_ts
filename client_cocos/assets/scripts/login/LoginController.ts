@@ -1,69 +1,57 @@
+import { ProtocolConnect } from "../protocol/ProtocolConnector";
+import { ErrorCode } from "../protocol/ProtocolErrorCode";
+import { ProtocolGate } from "../protocol/ProtocolGate";
 import PinusUtil from "../util/PinusUtil";
 import { Session } from "./LoginModel";
 
 export class LoginController {
 
-    public static Init(callback?: Function) {
-        PinusUtil.init('127.0.0.1', 3010)
+    public static Init() {
+        PinusUtil.init('127.0.0.1', 3100)
     }
 
-    public static reqRegister(account: string, password: string, success: Function) {
-
+    public static async OnRegister(account: string, password: string) {
         let req = {
             account: account,
             password: password,
         }
-
-        PinusUtil.request("connector.Handler.OnRegister", req, (data: any) => {
-            if (data.code == 0) {
-                Session.account.account = account
-                Session.account.password = password
-                if (success) {
-                    success()
-                }
-                return
-            }
-            console.error(data)
-        })
+        let resp = await PinusUtil.call<ProtocolGate.Register.Request, ProtocolGate.Register.Response>(ProtocolGate.Register.Router, req)
+        if (resp.errCode == ErrorCode.SUCCEED) {
+            Session.account.account = account
+            Session.account.password = password
+        }
     }
 
-    public static reqLogin(account: string, password: string, success: Function) {
-        PinusUtil.request("connector.Handler.OnLogin", { account: account, password: password }, (data: any) => {
-            if (data.code == 0) {
-                Session.account.account = data.resp.account.account
-                Session.account.password = data.resp.account.password
-                Session.account.uid = data.resp.account.uid
-                Session.account.token = data.resp.account.token
-                Session.host = data.resp.localConnector.host
-                Session.port = data.resp.localConnector.port
-                if (success) {
-                    success()
-                }
-                return
-            }
-            console.error(data.msg)
-        })
+    public static async OnLogin(account: string, password: string) {
+        let req: ProtocolGate.Login.Request = new ProtocolGate.Login.Request();
+        req.account = account
+        req.password = password
+        let resp = await PinusUtil.call<ProtocolGate.Login.Request, ProtocolGate.Login.Response>(ProtocolGate.Login.Router, req)
+        if (resp.errCode == ErrorCode.SUCCEED) {
+            Session.account.account = resp.account
+            Session.account.password = resp.password
+            Session.account.token = resp.token
+            Session.host = resp.host
+            Session.port = resp.port
+        } else {
+            //todo
+        }
     }
-
-    public static reqEnterGame(success: Function) {
+    
+    public static async OnConnectorAuth() {
         //先与gate服务器断开连接
         PinusUtil.disconnect()
         //再与connector服务器连接
-        PinusUtil.init(Session.host, Session.port, () => {
-            PinusUtil.request("connector.Handler.Enter", { account: Session.account.account, uid: Session.account.uid, token: Session.account.token }, (data: any) => {
-                if (data.code == 0) {
-                    Session.userInfo.uid = data.resp.userInfo.uid
-                    Session.userInfo.sex = data.resp.userInfo.sex
-                    Session.userInfo.nickName = data.resp.userInfo.nickName
-                    Session.userInfo.gold = data.resp.userInfo.gold
-                    Session.userInfo.avator = data.resp.userInfo.avator
-                    if (success) {
-                        success()
-                    }
-                    return
-                }
-                console.error(data.msg)
-            })
-        })
+        await PinusUtil.init(Session.host, Session.port)
+        //创建req
+        let req: ProtocolConnect.Auth.Request = new ProtocolConnect.Auth.Request()
+        req.token = Session.account.token
+        req.uid = Session.account.uid
+        //进行登录验证
+        let resp = await PinusUtil.call<ProtocolConnect.Auth.Request, ProtocolConnect.Auth.Response>(ProtocolConnect.Auth.Router, req)
+        if (resp.errCode == ErrorCode.SUCCEED) {
+
+        }
+
     }
 }

@@ -1,5 +1,14 @@
 module.exports = {
     "development": {
+        "gate": [
+            {
+                "id": "gate-server-1",
+                "host": "127.0.0.1",
+                "clientPort": 3100,
+                "frontend": true,
+                "args": " --inspect=10005"
+            }
+        ],
         "connector": [
             {
                 "id": "connector-server-1",
@@ -18,15 +27,6 @@ module.exports = {
                 "clientPort": 3300,
                 "frontend": true,
                 "args": " --inspect=10002"
-            }
-        ],
-        "gate": [
-            {
-                "id": "gate-server-1",
-                "host": "127.0.0.1",
-                "clientPort": 3500,
-                "frontend": true,
-                "args": " --inspect=10005"
             }
         ],
     },

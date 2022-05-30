@@ -19,9 +19,7 @@ export class LoginView extends Component {
         this._editBoxPassword = find("EditBox_Password", this.node).getComponent(EditBox);
         this._buttonRegister = find("Button_Register", this.node).getComponent(Button);
         this._buttonLogin = find("Button_Login", this.node).getComponent(Button);
-        LoginController.Init(() => {
-            console.log("pinus init success!")
-        })
+        LoginController.Init()
     }
 
     public start() {
@@ -33,36 +31,27 @@ export class LoginView extends Component {
         if (localStorage.getItem("password") != undefined) {
             this._editBoxPassword.string = localStorage.getItem("password")
         }
-    }
 
-    public onEnable() {
         this._buttonLogin.node.on('click', () => { this.buttonLoginClick() })
         this._buttonRegister.node.on('click', () => this.buttonRegisterClick())
     }
 
-    public onDisable() {
-
-    }
-
-    private buttonLoginClick() {
-        LoginController.reqLogin(this._editBoxAccount.string, this._editBoxPassword.string, () => {
-            localStorage.setItem("account", this._editBoxAccount.string)
-            localStorage.setItem("password", this._editBoxPassword.string)
-            LoginController.reqEnterGame(() => {
-                director.loadScene("hall", (err, scene) => {
-                    if (err != null) {
-                        return
-                    }
-                })
-            })
+    private async buttonLoginClick() {
+        localStorage.setItem("account", this._editBoxAccount.string)
+        localStorage.setItem("password", this._editBoxPassword.string)
+        await LoginController.OnLogin(this._editBoxAccount.string, this._editBoxPassword.string)
+        await LoginController.OnConnectorAuth()
+        director.loadScene("hall", (err, scene) => {
+            if (err != null) {
+                return
+            }
         })
     }
 
-    private buttonRegisterClick() {
-        LoginController.reqRegister(this._editBoxAccount.string, this._editBoxPassword.string, () => {
-            localStorage.setItem("account", this._editBoxAccount.string)
-            localStorage.setItem("password", this._editBoxPassword.string)
-        })
+    private async buttonRegisterClick() {
+        localStorage.setItem("account", this._editBoxAccount.string)
+        localStorage.setItem("password", this._editBoxPassword.string)
+        await LoginController.OnRegister(this._editBoxAccount.string, this._editBoxPassword.string)
     }
 
 }

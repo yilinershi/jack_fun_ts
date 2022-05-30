@@ -87,7 +87,7 @@ export class Handler {
             resp.uid = dbResult.data.uid
             resp.gender = dbResult.data.gender
             resp.password = dbResult.data.password
-            resp.port = selectedConnector.port
+            resp.port = selectedConnector.clientPort
             resp.host = selectedConnector.host
             resp.token = token
             return resp

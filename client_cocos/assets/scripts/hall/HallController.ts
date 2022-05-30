@@ -4,7 +4,7 @@ import PinusUtil from "../util/PinusUtil"
 
 export class HallController {
 
-    public static JoinRoom(gameType:E_GameType,roomId: string, success?: Function) {
+    public static JoinRoom(gameType: E_GameType, roomId: string, success?: Function) {
         let req = {
             account: Session.account.account,
             token: Session.account.token,
@@ -12,7 +12,7 @@ export class HallController {
             gameType: gameType,
             roomId: roomId,
         }
-        PinusUtil.request("connector.Handler.JoinRoom", req, (data: any) => {
+        PinusUtil.call("connector.Handler.JoinRoom", req, (data: any) => {
             if (data.code == 0) {
                 if (success) {
                     success()
