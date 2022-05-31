@@ -1,5 +1,5 @@
 import { Application, FrontendSession, Logger } from 'pinus';
-import { DaoAccountInfo } from '../../../dao/controller/DaoUserAccountInfo';
+import { DaoAccountInfo } from '../../../dao/controller/DaoAccountInfo';
 import { ProtocolGate } from '../../../protocol/ProtocolGate';
 import { plainToInstance } from 'class-transformer'
 import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
@@ -13,7 +13,7 @@ export default function (app: Application) {
 
 export class Handler {
     constructor(private app: Application) {
-        
+        this.app = app
     }
 
     public async OnRegister(msg: any, session: FrontendSession) {
@@ -28,21 +28,19 @@ export class Handler {
 
             GateLogger.debug("register req=" + JSON.stringify(req))
             //step2:保存数据
-            let dbResult = await DaoAccountInfo.register(req.account, req.password);
-            if (dbResult.code != ErrorCode.SUCCEED) {
+            let result = await DaoAccountInfo.register(req.account, req.password);
+            if (result.code != ErrorCode.SUCCEED) {
                 let resp = new ProtocolGate.Register.Response()
-                resp.errCode = dbResult.code
+                resp.errCode = result.code
                 return resp;
             }
 
             //step3:回复resp
             let resp = new ProtocolGate.Register.Response()
             resp.errCode = ErrorCode.SUCCEED
-            resp.account = dbResult.data.account
-            resp.avatar = dbResult.data.avatar
-            resp.uid = dbResult.data.uid
-            resp.gender = dbResult.data.gender
-            resp.password = dbResult.data.password
+            resp.account = result.data.account
+            resp.uid = result.data.uid
+            resp.password = result.data.password
             return resp
         } catch (error) {
             GateLogger.error(error);
@@ -61,10 +59,10 @@ export class Handler {
 
             GateLogger.debug("OnLogin req=" + JSON.stringify(req))
             //step2:保存数据
-            let dbResult = await DaoAccountInfo.login(req.account, req.password);
-            if (dbResult.code != ErrorCode.SUCCEED) {
+            let result = await DaoAccountInfo.login(req.account, req.password);
+            if (result.code != ErrorCode.SUCCEED) {
                 let resp = new ProtocolGate.Login.Response()
-                resp.errCode = dbResult.code
+                resp.errCode = result.code
                 return resp;
             }
 
@@ -76,17 +74,13 @@ export class Handler {
                 };
             }
 
-            let selectedConnector = RouterUtil.dispatch(dbResult.data.account, connectors);
-            let token = GateToken.GenToken(dbResult.data.uid)
+            let selectedConnector = RouterUtil.dispatch(result.data.account, connectors);
+            let token = GateToken.GenToken(result.data.uid)
 
             //step4:回复resp
             let resp = new ProtocolGate.Login.Response()
             resp.errCode = ErrorCode.SUCCEED
-            resp.account = dbResult.data.account
-            resp.avatar = dbResult.data.avatar
-            resp.uid = dbResult.data.uid
-            resp.gender = dbResult.data.gender
-            resp.password = dbResult.data.password
+            resp.uid = result.data.uid
             resp.port = selectedConnector.clientPort
             resp.host = selectedConnector.host
             resp.token = token

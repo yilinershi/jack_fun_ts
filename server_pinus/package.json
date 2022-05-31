@@ -1,6 +1,6 @@
 {
-    "name": "guide",
-    "version": "0.0.1",
+    "name": "pinus_cc",
+    "version": "1.0.0",
     "private": false,
     "bin": {
         "$": "./dist/bin/app.js"

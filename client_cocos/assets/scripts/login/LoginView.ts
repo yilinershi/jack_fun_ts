@@ -1,9 +1,12 @@
-import { Button, Component, director, EditBox, find, loader, Scene, SceneAsset, _decorator } from "cc";
-import PinusUtil from "../util/PinusUtil";
+import { Button, Component, director, EditBox, find,  _decorator } from "cc";
 import { LoginController } from "./LoginController";
-import { Session } from "./LoginModel";
 
 const { ccclass, property } = _decorator;
+
+
+/**
+ * 客户端从login开始，整个客户端没用什么框架，写得比较简单
+ */
 
 @ccclass("LoginView")
 export class LoginView extends Component {
@@ -12,7 +15,6 @@ export class LoginView extends Component {
     private _editBoxPassword: EditBox
     private _buttonRegister: Button
     private _buttonLogin: Button
-
 
     public onLoad() {
         this._editBoxAccount = find("EditBox_Account", this.node).getComponent(EditBox);

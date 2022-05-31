@@ -1,6 +1,6 @@
 import { ErrorCode } from "./ProtocolErrorCode";
 
-export namespace ProtocolConnect {
+export namespace ProtocolConnector {
     export namespace Auth {
         export const Router = 'connector.Handler.OnAuth';
         export class Request {

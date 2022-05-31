@@ -1,5 +1,5 @@
 import { Application, RemoterClass, FrontendSession } from 'pinus';
-import { GateToken } from '../service/GateToken';
+
 
 export default function (app: Application) {
     return new Remote(app);
@@ -8,9 +8,9 @@ export default function (app: Application) {
 // UserRpc的命名空间自动合并
 declare global {
     interface UserRpc {
-        gate: {
+        lobby: {
             // 一次性定义一个类自动合并到UserRpc中
-            Remote: RemoterClass<FrontendSession, Remote>;
+            lobbyRemoter: RemoterClass<FrontendSession, Remote>;
         };
     }
 }
@@ -27,7 +27,7 @@ export class Remote {
      * @param token
      */
     public async isLogin(uid: number, token: string): Promise<boolean> {
-        return GateToken.checkToken(uid, token);
+        return true
     }
 
 

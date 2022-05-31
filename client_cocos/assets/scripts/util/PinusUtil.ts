@@ -12,14 +12,14 @@ export default class PinusUtil {
      * @returns 
      */
     public static async init(host: string, port: number): Promise<void> {
-        console.log(`pinus init host =${host}, port=${port}`)
+        console.log(`pinus init, host =${host}, port=${port}`)
         return new Promise<void>(resolve => {
             pinus.init({ host: host, port: port, log: true, user: {} },
                 (data: any) => {
                     if (data) {
                         console.log(data)
                     }
-                    console.log("pinus init success!")
+                    console.log(`pinus init success! host =${host}, port=${port}`)
                     resolve();
                 });
         });

@@ -39,7 +39,7 @@ app.set('name', 'pinus_cc');
 //mysql配置
 app.loadConfig('mysql', app.getBase() + '/config/mysql')
 
-app.configure('all', () => {
+app.configure('production|development','all', () => {
     DaoManager.init(app);
     switch (app.serverType) {
         case 'gate':

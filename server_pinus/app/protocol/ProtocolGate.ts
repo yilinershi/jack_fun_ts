@@ -10,11 +10,6 @@ export namespace ProtocolGate {
         export class Response {
             public errCode: ErrorCode;
             public uid: number;
-            public account: string;
-            public password: string;
-            public nickname: string;
-            public gender: number;
-            public avatar: string;
             public host:string
             public port:number
             public token:string
@@ -32,9 +27,6 @@ export namespace ProtocolGate {
             public uid: number;
             public account: string;
             public password: string;
-            public nickname: string;
-            public gender: number;
-            public avatar: string;
         }
     }
 }
