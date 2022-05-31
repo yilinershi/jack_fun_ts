@@ -43,7 +43,7 @@ export class LoginView extends Component {
         localStorage.setItem("password", this._editBoxPassword.string)
         await LoginController.OnLogin(this._editBoxAccount.string, this._editBoxPassword.string)
         await LoginController.OnConnectorAuth()
-        director.loadScene("hall", (err, scene) => {
+        director.loadScene("lobby", (err, scene) => {
             if (err != null) {
                 return
             }

@@ -8,6 +8,7 @@ export enum ErrorCode {
     USER_UN_EXIST,
     ACCOUNT_OR_PASSWORD_ERROR,
     AUTH_ERR,
+    CHANGE_USER_INFO_ERR,
 }
 
 export let ErrorCode2Str = (errCode: ErrorCode) => {
@@ -30,6 +31,8 @@ export let ErrorCode2Str = (errCode: ErrorCode) => {
             return "账号不存在或密码错误"
         case ErrorCode.AUTH_ERR:
             return "账号未登录"
+        case ErrorCode.CHANGE_USER_INFO_ERR:
+            return "保存玩家信息失败"
         default:
             return "未知错误"
     }

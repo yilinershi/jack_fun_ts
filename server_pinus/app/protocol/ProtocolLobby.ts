@@ -18,9 +18,10 @@ export namespace ProtocolLobby {
         export class Request {
 
         }
-
+        
         export class Response {
             public errCode: ErrorCode;
+            public uid:number;
             public nickname: string;
             public gender: number;
             public avatar: string;

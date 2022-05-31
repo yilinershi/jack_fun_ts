@@ -16,9 +16,28 @@ export class HallController {
             console.log(ErrorCode2Str(resp.errCode))
             return
         }
-
         Session.userInfo.avator = resp.avatar
         Session.userInfo.nickName = resp.nickname
         Session.userInfo.gold = resp.gold
+        Session.userInfo.uid = resp.uid
     }
+
+    /**
+     * 修改玩家nickname
+     * @param nickName 要修改的nickname
+     * @returns 
+     */
+    public static async ChangeNickName(nickName: string) {
+        let req = new ProtocolLobby.ChangeNickName.Request()
+        req.nick = nickName
+
+        let resp = await PinusUtil.call<ProtocolLobby.ChangeNickName.Request, ProtocolLobby.ChangeNickName.Response>(ProtocolLobby.ChangeNickName.Router, req)
+        if (resp.errCode != ErrorCode.SUCCEED) {
+            console.log(ErrorCode2Str(resp.errCode))
+            return
+        }
+        Session.userInfo.nickName = nickName
+    }
+
+
 }

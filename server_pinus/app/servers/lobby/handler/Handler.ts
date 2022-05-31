@@ -27,6 +27,9 @@ export class Handler {
             return resp
         }
 
+        
+
+
         let resp = new ProtocolLobby.ChangeNickName.Response()
         resp.errCode = ErrorCode.SUCCEED
         return resp
@@ -47,6 +50,7 @@ export class Handler {
         resp.gender = result.data.gender
         resp.gold = result.data.gold
         resp.nickname = result.data.nickname
+        resp.uid = result.data.uid
         return resp
     }
 

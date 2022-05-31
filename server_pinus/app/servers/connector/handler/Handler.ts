@@ -52,7 +52,11 @@ export class Handler {
         //token正确，则绑定session和uid
         if (!sessionService.getByUid(req.uid.toString())) {
             session.bind(req.uid.toString(), (err: Error, result) => {
-                console.log("session bind token id error: ", err.stack);
+                if(err){
+                    ConnectLogger.info("session bind token id error: ", err.stack);
+                    return
+                }
+                ConnectLogger.info("session bind uid success!");
             });
             session.on("closed", (session: FrontendSession) => {
                 //玩家断开连接事件

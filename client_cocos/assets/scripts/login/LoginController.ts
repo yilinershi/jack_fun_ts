@@ -32,7 +32,7 @@ export class LoginController {
             console.log(ErrorCode2Str(resp.errCode))
             return
         }
-        Session.account.uid=resp.uid
+        Session.account.uid = resp.uid
         Session.account.token = resp.token
         Session.host = resp.host
         Session.port = resp.port
@@ -53,6 +53,7 @@ export class LoginController {
             console.log(ErrorCode2Str(resp.errCode))
             return
         }
+
 
     }
 }
