@@ -3,6 +3,8 @@ import { plainToInstance } from 'class-transformer'
 import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
 import { ProtocolLobby } from '../../../protocol/ProtocolLobby';
 import { DaoUserInfo } from '../../../dao/controller/DaoUserInfo';
+import { DbUserInfo } from '../../../dao/model/DbModel';
+import { LobbyLogger } from '../logger/Logger';
 
 export default function (app: Application) {
     return new Handler(app);
@@ -18,19 +20,38 @@ export class Handler {
      * @param session 
      * @returns 
      */
-    public async OnChangeNickName(msg: any, session: BackendSession) {
+    public async OnChangeUserInfo(msg: any, session: BackendSession) {
         //step1:检查req格式，这里用到了'class-transformer'这个库，用于检测msg是否符合ProtocolGate.Register.Request这个class结构
-        let req = plainToInstance(ProtocolLobby.ChangeNickName.Request, msg)
+        let req = plainToInstance(ProtocolLobby.ChangeUserInfo.Request, msg)
         if (req == null) {
-            let resp = new ProtocolLobby.ChangeNickName.Response()
+            let resp = new ProtocolLobby.ChangeUserInfo.Response()
             resp.errCode = ErrorCode.REQ_ARGS_ERR
             return resp
         }
 
-        
+        //step2:更据用户传过来的数据，组织要更新的数据
+        let uid = Number(session.uid)
+        let changeUserInfo = new DbUserInfo();
+        changeUserInfo.uid = uid;
+        if (req.nickname) {
+            changeUserInfo.nickname = req.nickname
+        }
+        if (req.avatar) {
+            changeUserInfo.avatar = req.avatar
+        }
+        if (req.gender) {
+            changeUserInfo.gender = req.gender
+        }
 
+        //step3:更新数据库，回复结果
+        let result = await DaoUserInfo.updateUserInfo(changeUserInfo)
+        if (result.code != ErrorCode.SUCCEED) {
+            let resp = new ProtocolLobby.GetUserInfo.Response()
+            resp.errCode = result.code
+            return
+        }
 
-        let resp = new ProtocolLobby.ChangeNickName.Response()
+        let resp = new ProtocolLobby.ChangeUserInfo.Response()
         resp.errCode = ErrorCode.SUCCEED
         return resp
     }
