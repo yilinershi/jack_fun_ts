@@ -4,7 +4,6 @@ import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
 import { ProtocolLobby } from '../../../protocol/ProtocolLobby';
 import { DaoUserInfo } from '../../../dao/controller/DaoUserInfo';
 import { DbUserInfo } from '../../../dao/model/DbModel';
-import { LobbyLogger } from '../logger/Logger';
 
 export default function (app: Application) {
     return new Handler(app);

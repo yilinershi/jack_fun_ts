@@ -1,9 +1,21 @@
+import { game } from "cc"
+import EventBus from "../define/EventBus"
 import { Session } from "../login/LoginModel"
 import { ErrorCode, ErrorCode2Str } from "../protocol/ProtocolErrorCode"
 import { ProtocolLobby } from "../protocol/ProtocolLobby"
 import PinusUtil from "../util/PinusUtil"
 
-export class HallController {
+export class LobbyController {
+
+
+
+    /**
+     * 一进入大厅模块，先获取玩家信息，再刷新玩家信息显示
+     */
+    public static async Start() {
+        await this.GetUserInfo();
+        EventBus.eventTarget.dispatchEvent(new Event("LobbyView.refreshUserInfo"))
+    }
 
     /**
      * 获取玩家信息
@@ -11,8 +23,9 @@ export class HallController {
     public static async GetUserInfo() {
         let req = new ProtocolLobby.GetUserInfo.Request()
         let resp = await PinusUtil.call<ProtocolLobby.GetUserInfo.Request, ProtocolLobby.GetUserInfo.Response>(ProtocolLobby.GetUserInfo.Router, req)
+
+        console.log(ErrorCode2Str(resp.errCode))
         if (resp.errCode != ErrorCode.SUCCEED) {
-            console.log(ErrorCode2Str(resp.errCode))
             return
         }
         Session.userInfo.avator = resp.avatar
@@ -35,6 +48,9 @@ export class HallController {
             return
         }
         Session.userInfo.nickName = nickName
+
+        //这里最好作事件监听
+        game.emit("LobbyView.refreshNickName")
     }
 
 
