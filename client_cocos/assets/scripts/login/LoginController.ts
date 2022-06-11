@@ -6,10 +6,19 @@ import { Session } from "./LoginModel";
 
 export class LoginController {
 
-    public static Init() {
+    /**
+     * 连接gate服务器
+     */
+    public static Start() {
         PinusUtil.init('127.0.0.1', 3100)
     }
 
+    /**
+     * 注册
+     * @param account 
+     * @param password 
+     * @returns 
+     */
     public static async OnRegister(account: string, password: string) {
         let req = new ProtocolGate.Register.Request()
         req.account = account
@@ -23,6 +32,12 @@ export class LoginController {
         Session.account.password = password
     }
 
+    /**
+     * 登录
+     * @param account 
+     * @param password 
+     * @returns 
+     */
     public static async OnLogin(account: string, password: string) {
         let req: ProtocolGate.Login.Request = new ProtocolGate.Login.Request();
         req.account = account
@@ -38,6 +53,13 @@ export class LoginController {
         Session.port = resp.port
     }
 
+
+    /**
+     * 断开gate服务器，转而连接connector服务器，连接需要检测登录的授权码
+     * @param account 
+     * @param password 
+     * @returns 
+     */
     public static async OnConnectorAuth() {
         //先与gate服务器断开连接
         PinusUtil.disconnect()
@@ -53,7 +75,7 @@ export class LoginController {
             console.log(ErrorCode2Str(resp.errCode))
             return
         }
-
-
     }
+
+    
 }

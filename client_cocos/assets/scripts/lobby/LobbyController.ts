@@ -12,15 +12,16 @@ export class LobbyController {
     /**
      * 一进入大厅模块，先获取玩家信息，再刷新玩家信息显示
      */
-    public static async Start() {
-        await this.GetUserInfo();
-        EventBus.eventTarget.dispatchEvent(new Event("LobbyView.refreshUserInfo"))
+    public static Start() {
+        this.GetUserInfo();
+
+        PinusUtil.on("kick",null)
     }
 
     /**
      * 获取玩家信息
      */
-    public static async GetUserInfo() {
+    private static async GetUserInfo() {
         let req = new ProtocolLobby.GetUserInfo.Request()
         let resp = await PinusUtil.call<ProtocolLobby.GetUserInfo.Request, ProtocolLobby.GetUserInfo.Response>(ProtocolLobby.GetUserInfo.Router, req)
 
@@ -32,6 +33,8 @@ export class LobbyController {
         Session.userInfo.nickName = resp.nickname
         Session.userInfo.gold = resp.gold
         Session.userInfo.uid = resp.uid
+
+        EventBus.eventTarget.dispatchEvent(new Event("LobbyView.refreshUserInfo"))
     }
 
     /**
@@ -52,6 +55,7 @@ export class LobbyController {
         //这里最好作事件监听
         game.emit("LobbyView.refreshNickName")
     }
+
 
 
 }

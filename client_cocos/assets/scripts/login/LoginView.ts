@@ -1,4 +1,4 @@
-import { Button, Component, director, EditBox, find,  _decorator } from "cc";
+import { Button, Component, director, EditBox, find, _decorator } from "cc";
 import { LoginController } from "./LoginController";
 
 const { ccclass, property } = _decorator;
@@ -21,10 +21,25 @@ export class LoginView extends Component {
         this._editBoxPassword = find("EditBox_Password", this.node).getComponent(EditBox);
         this._buttonRegister = find("Button_Register", this.node).getComponent(Button);
         this._buttonLogin = find("Button_Login", this.node).getComponent(Button);
-        LoginController.Init()
     }
 
     public start() {
+        LoginController.Start()
+        this.refreshAccountAndPassword()
+    }
+
+    public onEnable() {
+        this._buttonLogin.node.on('click', () => { this.buttonLoginClick() })
+        this._buttonRegister.node.on('click', () => this.buttonRegisterClick())
+    }
+
+    public onDisable() {
+        this._buttonLogin.node.off('click', () => { this.buttonLoginClick() })
+        this._buttonRegister.node.off('click', () => this.buttonRegisterClick())
+    }
+
+
+    private refreshAccountAndPassword() {
         this._editBoxAccount.string = ""
         this._editBoxPassword.string = ""
         if (localStorage.getItem("account") != undefined) {
@@ -33,10 +48,9 @@ export class LoginView extends Component {
         if (localStorage.getItem("password") != undefined) {
             this._editBoxPassword.string = localStorage.getItem("password")
         }
-
-        this._buttonLogin.node.on('click', () => { this.buttonLoginClick() })
-        this._buttonRegister.node.on('click', () => this.buttonRegisterClick())
     }
+
+
 
     private async buttonLoginClick() {
         localStorage.setItem("account", this._editBoxAccount.string)

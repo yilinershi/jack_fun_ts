@@ -1,4 +1,4 @@
-import { Button, Component, find, game, Label, SystemEvent, _decorator } from "cc";
+import { Button, Component, find, game, instantiate, Label, Layout, SystemEvent, _decorator } from "cc";
 import { E_GameType } from "../define/Enum";
 import EventBus from "../define/EventBus";
 import { Session } from "../login/LoginModel";
@@ -11,9 +11,7 @@ const { ccclass, property } = _decorator;
 export class LobbyView extends Component {
 
 
-    private _buttonDouDiZhu: Button
-    private _buttonNiuNiu: Button
-    private _buttonBaiJiaLe: Button
+
 
     private _labelNickName: Label
     private _labelId: Label
@@ -23,21 +21,18 @@ export class LobbyView extends Component {
 
     //生命周期函数
     public onLoad() {
-        this._buttonDouDiZhu = find("GameList/Button_DouDiZhu", this.node).getComponent(Button);
-        this._buttonNiuNiu = find("GameList/Button_NiuNiu", this.node).getComponent(Button);
-        this._buttonBaiJiaLe = find("GameList/Button_BaiJiaLe", this.node).getComponent(Button);
+      
         this._buttonChange = find("UserInfo/ButtonChange", this.node).getComponent(Button);
         this._labelNickName = find("UserInfo/NickName", this.node).getComponent(Label);
         this._labelId = find("UserInfo/Id", this.node).getComponent(Label);
         this._labelGold = find("UserInfo/Gold", this.node).getComponent(Label);
 
-        this._buttonDouDiZhu.node.on('click', () => this.buttonDouDiZhuClick())
-        this._buttonNiuNiu.node.on('click', () => this.buttonNiuNiuClick())
-        this._buttonBaiJiaLe.node.on('click', () => this.buttonBaiJiaLeClick())
-        this._buttonChange.node.on('click', () => this.buttonChangeNickNameClick())
 
+        this._buttonChange.node.on('click', () => this.buttonChangeNickNameClick())
         this.changeUserInfo = find("ChangeUserInfo", this.node).addComponent(ChangeUserInfoView);
         this.changeUserInfo.node.active = false
+
+        this.refreshGameList();
     }
 
     //生命周期函数
@@ -49,6 +44,7 @@ export class LobbyView extends Component {
     //生命周期函数
     public start() {
         LobbyController.Start();
+      
     }
 
     //生命周期函数
@@ -57,17 +53,27 @@ export class LobbyView extends Component {
         EventBus.eventTarget.removeEventListener("LobbyView.refreshUserInfo", () => this.refreshUserInfo())
     }
 
-    private buttonDouDiZhuClick() {
+    private refreshGameList() {
+        let gameList = [
+            { name: "中国象棋", id: 10001, },
+            { name: "五子棋", id: 10002, }
+        ]
 
+        let btnItem = find("GameList/Button_Game", this.node)
+        let layOut = find("GameList", this.node).getComponent(Layout)
+        gameList.forEach(gameInfo => {
+            let item = instantiate(btnItem);
+            layOut.node.addChild(item);
+            let label = find("Label", item).getComponent(Label)
+            label.string = gameInfo.name
+            item.on("click", () => {
+                console.log(`按钮名称为:${gameInfo.name},按钮Id为：${gameInfo.id}`)
+            })
+        })
+
+        btnItem.active = false
     }
 
-    private buttonNiuNiuClick() {
-
-    }
-
-    private buttonBaiJiaLeClick() {
-
-    }
 
     private async buttonChangeNickNameClick() {
         this.changeUserInfo.node.active = true

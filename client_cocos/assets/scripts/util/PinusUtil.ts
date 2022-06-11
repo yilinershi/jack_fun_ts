@@ -13,6 +13,11 @@ export default class PinusUtil {
      */
     public static async init(host: string, port: number): Promise<void> {
         console.log(`pinus init, host =${host}, port=${port}`)
+
+        pinus.on('disconnect', (reason) =>{
+            console.log('pinus on disconnect',reason);
+        });
+
         return new Promise<void>(resolve => {
             pinus.init({ host: host, port: port, log: true, user: {} },
                 (data: any) => {
@@ -24,6 +29,7 @@ export default class PinusUtil {
                 });
         });
     }
+
 
     /**
      * 向服务器发送一条req,同时返回resp
