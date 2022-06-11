@@ -1,4 +1,5 @@
 import { Application, RemoterClass, FrontendSession } from 'pinus';
+import { ProtocolRpcGate } from '../../../protocolRpc/ProtocolRpcGate';
 import { GateToken } from '../service/GateToken';
 
 export default function (app: Application) {
@@ -21,13 +22,15 @@ export class Remote {
         this.app = app
     }
 
-    /**
-     *
-     * @param uid
-     * @param token
-     */
-    public async isLogin(uid: number, token: string): Promise<boolean> {
-        return GateToken.checkToken(uid, token);
+   /**
+    * 
+    * @param req 
+    * @returns 
+    */
+    public async isLogin(req: ProtocolRpcGate.IsLogin.Request): Promise<ProtocolRpcGate.IsLogin.Response> {
+        let resp = new ProtocolRpcGate.IsLogin.Response();
+        resp.isLogin = GateToken.checkToken(req.uid, req.token)
+        return resp;
     }
 
 

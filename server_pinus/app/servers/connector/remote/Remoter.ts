@@ -1,4 +1,6 @@
 import { Application, RemoterClass, FrontendSession } from 'pinus';
+import { ProtocolConnector } from '../../../protocol/ProtocolConnector';
+import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
 
 export default function (app: Application) {
     return new ConnectRemoter(app);
@@ -21,5 +23,15 @@ export class ConnectRemoter {
     }
 
 
-   
+
+    public kickUser(sessionId: number, reson: ErrorCode) {
+        let sessionService = this.app.get("sessionService");
+        let msg = new ProtocolConnector.KickUser.Message()
+        msg.errCode = reson
+        sessionService.kickBySessionId(sessionId);
+        return
+    }
+
+
+
 }

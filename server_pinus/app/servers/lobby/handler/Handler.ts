@@ -1,4 +1,4 @@
-import { Application, BackendSession, FrontendSession } from 'pinus';
+import { Application, BackendSession, ChannelService, FrontendSession } from 'pinus';
 import { plainToInstance } from 'class-transformer'
 import { ErrorCode } from '../../../protocol/ProtocolErrorCode';
 import { ProtocolLobby } from '../../../protocol/ProtocolLobby';
@@ -12,7 +12,12 @@ export default function (app: Application) {
 export class Handler {
     constructor(private app: Application) {
         this.app = app
+        
     }
+
+    
+
+
     /**
      * 客户端请求修改用户昵称
      * @param msg 

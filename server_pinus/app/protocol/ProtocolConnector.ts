@@ -12,4 +12,12 @@ export namespace ProtocolConnector {
             public errCode: ErrorCode;
         }
     }
+
+
+    export namespace KickUser{
+        export const Router = 'kick';
+        export class Message{
+            public errCode: ErrorCode;
+        }
+    }
 }
